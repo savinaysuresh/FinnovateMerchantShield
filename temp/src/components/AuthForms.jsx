@@ -59,17 +59,28 @@ export const Login = () => {
   const isAdminRoute = location.pathname.includes('admin');
   const roleTarget = isAdminRoute ? 'admin' : 'merchant';
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    try {
-      const user = await loginUser(formData.username, formData.password, roleTarget);
-      login(user);
-      navigate(isAdminRoute ? '/admin/dashboard' : '/merchant/dashboard');
-    } catch (err) {
-      setError(err.message);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const resp = await loginUser(formData.username, formData.password);
+    // If backend returns { token, user } use both. If it returns token in different shape adapt accordingly.
+    if (resp.token && resp.user) {
+      login({ token: resp.token, user: resp.user });
+      // route based on role
+    } else if (resp.user) {
+      // no token, but backend returns user object (sessionless) - still store
+      login({ token: null, user: resp.user });
+    } else if (resp.message) {
+      // If backend returns only message on success, you might want to fetch user profile next
+      // For now set a simple user object
+      login({ token: null, user: { username: formData.username } });
+    } else {
+      throw new Error('Unexpected response from login');
     }
-  };
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   return (
     <AuthLayout>

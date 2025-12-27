@@ -1,32 +1,45 @@
+// src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from 'react';
+import { setAuthToken } from '../services/api';
 
 const AuthContext = createContext(null);
+const STORAGE_KEY = 'fraudApp_auth'; // stores { token, user }
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // { username, role }
+  const [auth, setAuth] = useState({ token: null, user: null });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage on load to see if user was previously logged in
-    const storedUser = localStorage.getItem('fraudApp_currentUser');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // Hydrate from localStorage
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setAuth(parsed);
+        if (parsed?.token) setAuthToken(parsed.token);
+      }
+    } catch (e) {
+      console.warn('Failed to load auth from storage', e);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('fraudApp_currentUser', JSON.stringify(userData));
+  const login = ({ token = null, user = null }) => {
+    const payload = { token, user };
+    setAuth(payload);
+    if (token) setAuthToken(token);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem('fraudApp_currentUser');
+    setAuth({ token: null, user: null });
+    setAuthToken(null);
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user: auth.user, token: auth.token, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
