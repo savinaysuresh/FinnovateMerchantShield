@@ -110,3 +110,9 @@ npm run dev
 - **Merchant Dashboard:** Instant view of transaction health.
 - **Risk Analysis:** Demonstration of the `RiskGauge.jsx` flagging a fraudulent payload.
 - **Admin Audit:** Table view of historical transaction scores.
+  ![first_page](https://github.com/NahadK97/Finnovate/blob/main/images/pic1.jpeg)
+  ![second](https://github.com/NahadK97/Finnovate/blob/main/images/pic2.jpeg)
+  ![third](https://github.com/NahadK97/Finnovate/blob/main/images/pic3.jpeg)
+  ![fourth](https://github.com/NahadK97/Finnovate/blob/main/images/pic4.jpeg)
+  ![fifth](https://github.com/NahadK97/Finnovate/blob/main/images/pic3.jpeg)
+  ![sixth](https://github.com/NahadK97/Finnovate/blob/main/images/pic4.jpeg)
