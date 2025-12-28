@@ -32,7 +32,7 @@ with open("../model/schema.json") as f:
     FEATURE_NAMES = json.load(f)["features"]
 
 # --- 1) User Registration ---
-@app.route("/signup", methods=["POST"])
+@app.route("/api/signup", methods=["POST"])
 def signup():
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
@@ -42,19 +42,19 @@ def signup():
     return jsonify(response), status_code
 
 # --- 2) User Authentication ---
-@app.route("/login", methods=["POST"])
+@app.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json()
     response, status_code = authenticate_user(data.get('username'), data.get('password'))
     return jsonify(response), status_code
 
 # --- 4) GET transactions by a single user ---
-@app.route("/get-logs/<username>", methods=["GET"])
+@app.route("/api/get-transactions/<username>", methods=["GET"])
 def user_transactions(username):
     transactions = get_transactions_by_user(username)
     return jsonify(transactions)
 
-@app.route("/get-logs", methods=["GET"])
+@app.route("/api/get-all-transactions", methods=["GET"])
 def get_logs():
     try:
         # Get limit from query parameters, default to 100
@@ -66,7 +66,7 @@ def get_logs():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/analyze-risk", methods=["POST"])
+@app.route("/api/analyze-risk", methods=["POST"])
 def analyze_risk():
     require_api_key()
     
