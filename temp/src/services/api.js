@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 // --- API CONFIGURATION ---
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
 
 // --- HELPER: Get auth token from localStorage ---
 const getAuthToken = () => {
@@ -23,7 +23,7 @@ const apiRequest = async (endpoint, options = {}) => {
 
   // For analyze-risk endpoint, add API key if needed
   if (endpoint.includes("analyze-risk")) {
-    const apiKey = import.meta.env.VITE_API_KEY || "dev-api-key";
+    const apiKey = import.meta.env.VITE_API_KEY;
     if (apiKey) {
       headers["X-API-Key"] = apiKey;
     }
@@ -152,10 +152,10 @@ export const loginUser = async (username, password, requiredRole) => {
   );
   throw new Error(
     response.message ||
-      response.error ||
-      `Invalid response from server. Expected token and username, but received: ${JSON.stringify(
-        response
-      )}`
+    response.error ||
+    `Invalid response from server. Expected token and username, but received: ${JSON.stringify(
+      response
+    )}`
   );
 };
 
@@ -195,8 +195,8 @@ export const analyzeRisk = async (transactionPayload, currentUser) => {
     fraudProbability > 0.5
       ? "high"
       : fraudProbability >= 0.1
-      ? "moderate"
-      : "low";
+        ? "moderate"
+        : "low";
 
   return {
     transaction_id: transactionId.slice(0, 8).toUpperCase(),
@@ -206,8 +206,8 @@ export const analyzeRisk = async (transactionPayload, currentUser) => {
       fraudProbability > 0.5
         ? "Transaction flagged as high risk."
         : fraudProbability >= 0.1
-        ? "Transaction shows moderate risk indicators."
-        : "Transaction appears safe.",
+          ? "Transaction shows moderate risk indicators."
+          : "Transaction appears safe.",
     timestamp: dateTime,
   };
 };
@@ -263,8 +263,7 @@ export const getAllTransactions = async (limit = 100) => {
 
     if (mapped.length !== transactions.length) {
       console.warn(
-        `Warning: ${
-          transactions.length - mapped.length
+        `Warning: ${transactions.length - mapped.length
         } transactions were filtered out during mapping`
       );
     }
@@ -329,8 +328,7 @@ export const getMerchantTransactions = async (username) => {
 
     if (mapped.length !== transactions.length) {
       console.warn(
-        `Warning: ${
-          transactions.length - mapped.length
+        `Warning: ${transactions.length - mapped.length
         } transactions were filtered out during mapping for ${username}`
       );
     }
@@ -368,8 +366,8 @@ const mapTransactionToFrontendFormat = (txn, index) => {
     fraudProbability > 0.5
       ? "high"
       : fraudProbability >= 0.1
-      ? "moderate"
-      : "low";
+        ? "moderate"
+        : "low";
 
   // 4. TIMESTAMP: It's in txn.transaction["date/time"]
   const timestamp = txn.transaction?.["date/time"] || new Date().toISOString();
@@ -404,7 +402,7 @@ const mapTransactionToFrontendFormat = (txn, index) => {
       fraudProbability > 0.5
         ? "Transaction flagged as high risk."
         : fraudProbability >= 0.1
-        ? "Transaction shows moderate risk indicators."
-        : "Transaction appears safe.",
+          ? "Transaction shows moderate risk indicators."
+          : "Transaction appears safe.",
   };
 };
